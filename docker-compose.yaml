@@ -1,0 +1,36 @@
+version: '3.7'
+
+networks:
+  common:
+
+
+services:
+  tododb:
+    container_name: tododb
+    image: postgres:13.8
+    restart: always
+    ports:
+      - 5432:5432
+
+    environment:
+      - POSTGRES_PASSWORD=secret
+
+    volumes:
+      - ./db/pg-init.sql:/docker-entrypoint-initdb.d/1.sql
+
+    networks:
+      - common
+
+
+  auth-service:
+    container_name: auth-service
+    build: ./auth-service
+    restart: always
+    ports:
+      - 4000:4000
+
+    depends_on:
+      - tododb
+
+    networks:
+      - common
